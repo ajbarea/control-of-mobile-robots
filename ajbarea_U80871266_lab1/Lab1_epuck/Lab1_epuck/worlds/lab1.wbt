@@ -1,0 +1,188 @@
+#VRML_SIM R2022a utf8
+WorldInfo {
+  info [
+    "Example use of the Encoders of a Robot robot."
+  ]
+  title "Encoders"
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.7138002385670461 0.6998501997155271 0.026437045594486414 3.036145233348098
+  position -0.35514110955758943 4.0353067939211575 0.6301415259852403
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  size 3 3
+}
+Solid {
+  translation 0.255 0 0.375
+  name "Rectangle"
+  locked TRUE
+}
+DEF epuck E-puck {
+  hidden position_0_0 14.871039914718558
+  hidden position_0_1 14.871039677458066
+  hidden linearVelocity_0 1.430204993894077e-05 3.2674435521348758e-09 -0.1255990626517333
+  hidden angularVelocity_0 -1.3306552801862247e-09 -5.0815261352393436e-05 6.251579750544326e-09
+  hidden rotation_1 2.3191479448312873e-08 0.9999999999999984 -5.214748307140158e-08 2.3046694025300383
+  hidden linearVelocity_1 1.4301938730104967e-05 3.1166362626993372e-09 -0.12560038419098907
+  hidden angularVelocity_1 -6.279997403570369 0.005627296642370799 -0.0007619901494641003
+  hidden rotation_2 2.31790620020754e-08 0.9999999999999984 -5.211954502696763e-08 2.304669165326553
+  hidden linearVelocity_2 1.4301260301416898e-05 3.4213785715185333e-09 -0.1255977406660303
+  hidden angularVelocity_2 -6.279997298152406 0.005627075487681905 -0.00076167029996064
+  hidden linearVelocity_45 1.5087429663689916e-05 3.3716173424873525e-09 -0.1255980451967562
+  hidden angularVelocity_45 -1.3306723113422648e-09 -5.081526135757687e-05 6.254024032517584e-09
+  hidden linearVelocity_46 1.2546670629749627e-05 3.4381164673154146e-09 -0.1255980455098212
+  hidden angularVelocity_46 -1.3306034434330828e-09 -5.08152613389483e-05 6.254150523974976e-09
+  translation 1.7492262217887616e-05 -8.865092242505389e-05 -0.29339963363888505
+  rotation 0.5769049047382072 -0.5773561053750451 -0.5777894586050875 -2.092846559646989
+  controller "lab1_task1"
+  camera_width 50
+  turretSlot [
+    InertialUnit {
+      rotation 0 1 0 3.14159265359
+    }
+    DEF righthinge HingeJoint {
+      jointParameters HingeJointParameters {
+        position 1.7968840134728487e-08
+        axis -1 0 0
+        anchor 0 0.025 0
+      }
+      device [
+        RotationalMotor {
+          name "right wheel motor"
+          consumptionFactor 70
+        }
+        PositionSensor {
+          name "right wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.024999999999999974 -0.02000000053746366 -0.009999997581413126
+        rotation -0.9999993204048647 -0.001005238082336061 0.0005904965762153378 1.6463482632698903
+        children [
+          DEF WHEEL Transform {
+            rotation 0 0 1 1.57
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0 0 0
+                  transparency 1
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.019
+                }
+              }
+            ]
+            rotationStep 0.25
+          }
+        ]
+        name "right wheel(1)"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+        rotationStep 0.25
+        linearVelocity -4.244860507098804e-12 -7.330982612074877e-09 1.2311535061707431e-08
+        angularVelocity -2.870256018351631e-07 -5.1172458781375694e-12 -1.6367579521527823e-10
+      }
+    }
+    DEF lefthinge HingeJoint {
+      jointParameters HingeJointParameters {
+        position 1.796845484558084e-08
+        axis -1 0 0
+        anchor 0 0.025 0
+      }
+      device [
+        RotationalMotor {
+          name "left wheel motor"
+          consumptionFactor 70
+        }
+        PositionSensor {
+          name "left wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation -0.024999999999999974 -0.01999999997687754 -0.010000000104050792
+        rotation -0.9999982114227295 0.00047272530968173025 -0.0018313061250710555 1.242580992902555
+        children [
+          DEF WHEEL Transform {
+            rotation 0 0 1 1.57
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.1 0.1 0.1
+                  transparency 1
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.019
+                }
+              }
+            ]
+            rotationStep 0.25
+          }
+        ]
+        name "left wheel(1)"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+        linearVelocity 6.682967254350816e-12 -7.328845477161395e-09 1.2311209557877299e-08
+        angularVelocity -2.8702306074362295e-07 -5.129086290076092e-12 7.918680769295255e-11
+      }
+    }
+    DEF front_ds DistanceSensor {
+      rotation 0 1 0 1.5708
+      name "front_ds"
+      recognitionColors [
+        0 0 0
+      ]
+      lookupTable [
+        0 0 0
+        60 1000 0
+      ]
+    }
+    DEF right_ds DistanceSensor {
+      name "right_ds"
+      lookupTable [
+        0 0 0
+        60 1000 0
+      ]
+    }
+    DEF left_ds DistanceSensor {
+      rotation 0 1 0 3.14159
+      name "left_ds"
+      lookupTable [
+        0 0 0
+        60 1000 0
+      ]
+    }
+    Camera {
+      translation 0 -0.01 -0.045
+      name "camera1"
+      recognitionColors [
+        1 1 0
+        1 0 1
+        0 1 1
+        0 1 0
+      ]
+      fieldOfView 1.57
+      width 80
+      height 80
+      recognition Recognition {
+      }
+    }
+  ]
+}
