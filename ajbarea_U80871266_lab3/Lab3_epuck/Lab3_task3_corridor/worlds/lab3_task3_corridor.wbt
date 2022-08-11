@@ -1,0 +1,196 @@
+#VRML_SIM R2022a utf8
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.6579002864350653 0.5208700863359668 -0.5439315823419536 1.9613224098097424
+  position -0.923272205057358 3.8569621564192476 0.05635573548330798
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+DEF area RectangleArena {
+  translation 0.00608592 -4.44089e-16 -0.0128875
+  rotation 1 7.19235e-09 7.19234e-09 -1.5707953071795862
+  floorSize 1.8288 1.8288
+  floorTileSize 0.9144 0.9144
+}
+WoodenBox {
+  translation 0.466039 -3.86982e-09 -0.010027
+  rotation 1.93492e-07 1 1.93492e-07 1.5708
+  size 0.9144 0.2 0.01
+}
+WoodenBox {
+  translation 0.002241 1.74146e-07 -0.464146
+  rotation 0.35485598989067857 0.9349209733654866 1.9448199445949612e-07 1.09054e-06
+  name "wooden box(3)"
+  size 0.9144 0.2 0.01
+}
+WoodenBox {
+  translation -0.458831 -1.70787e-06 -0.00093
+  rotation 0.7071067811865476 5.0857584262173836e-09 -0.7071067811865476 3.14159
+  name "wooden box(1)"
+  size 0.9144 0.2 0.01
+}
+WoodenBox {
+  translation 0.00140512 0.01 0.443731
+  rotation -1 -9.41782e-07 2.39744e-09 -3.1415853071795863
+  name "wooden box(2)"
+  size 0.9144 0.2 0.01
+}
+DEF epuck E-puck {
+  hidden position_0_0 2.9407211211332405e-08
+  hidden position_0_1 -5.791947858312029e-08
+  hidden rotation_1 0 1 0 2.9802322387695313e-08
+  hidden rotation_2 0 -1 0 5.960464477539063e-08
+  translation 0.715618910056492 -8.940578948757848e-05 0.6865710829083492
+  rotation 0.0005783836394992302 0.7074901937179923 0.7067229239703797 3.1404180993710904
+  controller "lab3_task3corridor"
+  supervisor TRUE
+  camera_width 50
+  turretSlot [
+    InertialUnit {
+      rotation 0 1 0 0
+    }
+    DEF righthinge HingeJoint {
+      jointParameters HingeJointParameters {
+        position 3.588091374288205e-08
+        axis -1 0 0
+        anchor 0 0.025 0
+      }
+      device [
+        RotationalMotor {
+          name "right wheel motor"
+          consumptionFactor 70
+          controlPID 8 2 0.5
+        }
+        PositionSensor {
+          name "right wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.04500995778380098 0.025013380757998385 -2.4671930332184067e-05
+        rotation 0.999999320350003 0.001005273399691985 -0.0005905293590648398 4.636837086173779
+        children [
+          DEF WHEEL Transform {
+            translation -0.007 0.01 -0.05
+            rotation 0 0 1 1.57
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0 0 0
+                  transparency 1
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.02
+                }
+              }
+            ]
+            rotationStep 0.25
+          }
+        ]
+        name "right wheel(1)"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+        rotationStep 0.25
+      }
+    }
+    DEF lefthinge HingeJoint {
+      jointParameters HingeJointParameters {
+        position -1.2414098371493765e-07
+        axis -1 0 0
+        anchor 0 0.025 0
+      }
+      device [
+        RotationalMotor {
+          name "left wheel motor"
+          consumptionFactor 70
+          controlPID 8 0 0
+        }
+        PositionSensor {
+          name "left wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation -0.04501012942703837 0.02497767198295653 -4.573397893385742e-05
+        rotation -0.9999982113392067 0.00047275284080102337 -0.0018313446259335285 1.2425808961481954
+        children [
+          DEF WHEEL Transform {
+            translation 0.007 0 -0.05
+            rotation 0 0 1 1.57
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.1 0.1 0.1
+                  transparency 1
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.02
+                }
+              }
+            ]
+            rotationStep 0.25
+          }
+        ]
+        name "left wheel(1)"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+      }
+    }
+    DEF front_ds DistanceSensor {
+      translation 0.045 0 -0.01
+      rotation 0 1 0 0
+      name "front_ds"
+      recognitionColors [
+        0 0 0
+      ]
+      lookupTable [
+        0 0 0
+        1.27 1.27 0
+      ]
+    }
+    DEF right_ds DistanceSensor {
+      translation 0.01 -0.035 -0.01
+      rotation 0 0 1 -1.57
+      name "right_ds"
+      lookupTable [
+        0 0 0
+        1.27 1.27 0
+      ]
+    }
+    DEF left_ds DistanceSensor {
+      translation 0.01 0.035 -0.01
+      rotation 0 0 1 1.57
+      name "left_ds"
+      lookupTable [
+        0 0 0
+        1.27 1.27 0
+      ]
+    }
+    Camera {
+      translation 0.03 0 -0.045
+      name "camera1"
+      recognitionColors [
+        1 1 0
+      ]
+      fieldOfView 1.57
+      width 80
+      height 80
+      recognition Recognition {
+      }
+    }
+  ]
+}
