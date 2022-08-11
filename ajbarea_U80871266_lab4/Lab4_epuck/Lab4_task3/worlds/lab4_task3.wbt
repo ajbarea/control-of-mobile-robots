@@ -1,0 +1,227 @@
+#VRML_SIM R2022a utf8
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.42399118780946177 -0.6495213348289198 -0.6311525237705858 2.4042727688240078
+  position 1.6479417490066015 3.716963308599585 0.09336940709804198
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+DEF area RectangleArena {
+  translation -0.260407 -4.44089e-16 -0.190988
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  floorSize 2.54 2.286
+  floorTileSize 0.508 0.508
+}
+DEF YellowCylinder Solid {
+  translation -0.22807104117820923 0.3305840148768343 -1.124322589222329
+  rotation 0.9999948069185262 -0.0022864017831364454 0.002271233776103004 1.5708117515774274
+  children [
+    DEF landmark Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Cylinder {
+        height 0.7
+        radius 0.15
+      }
+    }
+  ]
+  boundingObject USE landmark
+  physics DEF landmarkPH Physics {
+  }
+  recognitionColors [
+    0 0 1
+  ]
+}
+WoodenBox {
+  translation -0.261274 0.0300054 0.31901
+  rotation -0.8054613727574799 -0.5926482742702315 3.9102518096157797e-07 4.48562e-06
+  name "wooden box(2)"
+  size 0.642 0.05 0.254
+}
+WoodenBox {
+  translation -0.255559 0.0299992 -0.082969
+  rotation 2.7119299999890713e-07 0.9999999999959701 -2.8260299999886113e-06 3.14159
+  name "wooden box(4)"
+  size 0.128 0.05 0.558
+}
+WoodenBox {
+  translation 0.184441 0.0300037 0.447031
+  rotation 1 -9.56001e-15 1.32919e-06 3.14159
+  name "wooden box(3)"
+  size 0.254 0.05 0.508
+}
+WoodenBox {
+  translation -0.705559 0.0300036 0.44703
+  rotation 1 -9.56001e-15 1.32919e-06 3.14159
+  name "wooden box(1)"
+  size 0.254 0.05 0.508
+}
+WoodenBox {
+  translation -0.255559 0.0299969 -0.48297
+  rotation 0.7071072811853829 1.8320307285178296e-06 0.7071062811849852 3.14159
+  name "wooden box(5)"
+  size 0.254 0.05 1.137
+}
+DEF epuck E-puck {
+  hidden position_0_0 6.378521290492897e-08
+  hidden position_0_1 -8.94704379922778e-07
+  hidden rotation_1 0 1 0 6.664001874625056e-08
+  hidden rotation_2 0 -1 0 8.945662391068792e-07
+  translation -0.2258283368130041 -8.870613408062944e-05 0.9198729491266526
+  rotation -0.5972197302619564 0.5669697772724556 0.5673392860057006 2.0625132799616512
+  controller "lab4_task3"
+  supervisor TRUE
+  camera_width 50
+  turretSlot [
+    InertialUnit {
+      rotation 0 1 0 3.14
+    }
+    DEF righthinge HingeJoint {
+      jointParameters HingeJointParameters {
+        position 7.022581439947116e-08
+        axis -1 0 0
+        anchor 0 0.025 0
+      }
+      device [
+        RotationalMotor {
+          name "right wheel motor"
+          consumptionFactor 70
+          controlPID 8 2 0.5
+        }
+        PositionSensor {
+          name "right wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation 0.04500995778380098 0.025013380757151028 -2.4671930791744876e-05
+        rotation 0.9999993203500246 0.0010052733735455047 -0.0005905293669256265 4.636837051828904
+        children [
+          DEF WHEEL Transform {
+            translation -0.007 0.01 -0.05
+            rotation 0 0 1 1.57
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0 0 0
+                  transparency 1
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.02
+                }
+              }
+            ]
+            rotationStep 0.25
+          }
+        ]
+        name "right wheel(1)"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+        rotationStep 0.25
+      }
+    }
+    DEF lefthinge HingeJoint {
+      jointParameters HingeJointParameters {
+        position -3.114895079356224e-08
+        axis -1 0 0
+        anchor 0 0.025 0
+      }
+      device [
+        RotationalMotor {
+          name "left wheel motor"
+          consumptionFactor 70
+          controlPID 8 0 0
+        }
+        PositionSensor {
+          name "left wheel sensor"
+        }
+      ]
+      endPoint Solid {
+        translation -0.04501012942703836 0.02497767197903309 -4.5733977018380706e-05
+        rotation -0.9999982113394209 0.00047275273392019106 -0.001831344536478487 1.2425809819360552
+        children [
+          DEF WHEEL Transform {
+            translation 0.007 0 -0.05
+            rotation 0 0 1 1.57
+            children [
+              Shape {
+                appearance PBRAppearance {
+                  baseColor 0.1 0.1 0.1
+                  transparency 1
+                  roughness 1
+                  metalness 0
+                }
+                geometry Cylinder {
+                  height 0.01
+                  radius 0.02
+                }
+              }
+            ]
+            rotationStep 0.25
+          }
+        ]
+        name "left wheel(1)"
+        boundingObject USE WHEEL
+        physics DEF PHYSICS_WHEEL Physics {
+          density -1
+          mass 0.05
+        }
+      }
+    }
+    DEF front_ds DistanceSensor {
+      translation 0.045 0 -0.01
+      rotation 0 1 0 0
+      name "front_ds"
+      recognitionColors [
+        0 0 0
+      ]
+      lookupTable [
+        0 0 0
+        1.27 1.27 0
+      ]
+    }
+    DEF right_ds DistanceSensor {
+      translation 0.01 -0.035 -0.01
+      rotation 0 0 1 -1.57
+      name "right_ds"
+      lookupTable [
+        0 0 0
+        1.27 1.27 0
+      ]
+    }
+    DEF left_ds DistanceSensor {
+      translation 0.01 -0.035 -0.01
+      rotation 0 0 1 1.57
+      name "left_ds"
+      lookupTable [
+        0 0 0
+        1.27 1.27 0
+      ]
+    }
+    Camera {
+      translation 0.03 0 -0.045
+      rotation 0 1 0 0
+      name "camera1"
+      recognitionColors [
+        1 1 0
+      ]
+      fieldOfView 1.57
+      width 80
+      height 80
+      recognition Recognition {
+      }
+    }
+  ]
+}
