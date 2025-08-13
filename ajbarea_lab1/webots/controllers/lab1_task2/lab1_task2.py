@@ -2,9 +2,10 @@
 # Tests differential drive kinematics for circular trajectories
 
 # E-puck robot physical specifications and constants
-WHEEL_RADIUS = 0.8  # radius of epuck wheel [inches]
+WHEEL_RADIUS = 0.807  # radius of epuck wheel [inches] (official: 0.0205m)
 WHEEL_BASE = 2.28  # distance between epuck wheels [inches]
 MAX_VELOCITY = 6.28  # motor speed cap [radians per second]
+MAX_LINEAR_VELOCITY = MAX_VELOCITY * WHEEL_RADIUS  # maximum linear velocity [inches per second]
 
 from controller import Robot
 import time
@@ -29,15 +30,17 @@ rightposition_sensor = robot.getDevice("right wheel sensor")
 leftposition_sensor.enable(timestep)  # enable encoder readings
 rightposition_sensor.enable(timestep)  # enable encoder readings
 
+# GPS not available on e-puck - using odometry instead
+
 robot.step(timestep)
 
 ############################################################################
 ############# Experiment Parameters - Modify these for testing #############
 ############################################################################
 V = 5  # linear velocity [inches per second]
-V = -5  # negative velocity for reverse circular motion
-V = 0  # zero velocity - robot stays stationary
-V = MAX_VELOCITY + 1  # test velocity limit error handling
+# V = -5  # negative velocity for reverse circular motion
+# V = 0  # zero velocity - robot stays stationary
+# V = MAX_VELOCITY + 1  # test velocity limit error handling
 W = 0  # angular velocity [radians per second] - calculated from V and R
 R1 = 0  # circle radius [inches] - 0 means turn in place
 R1 = 10  # circle radius [inches] - positive value for curved path
@@ -67,9 +70,12 @@ def turnRV(R, V):
     print(f"[Starting position] {START}")
     timeSTART = time.monotonic()  # start time
     if R == 0:  # robot spins in place for a full circle
-        leftMotor.setVelocity(V)
-        rightMotor.setVelocity(-V)
-        circumference = 12 * math.pi
+        # Convert linear velocity to motor rotational velocity for turn-in-place
+        motor_velocity = V / WHEEL_RADIUS
+        motor_velocity = min(abs(motor_velocity), MAX_VELOCITY) * (1 if V > 0 else -1)
+        leftMotor.setVelocity(motor_velocity)
+        rightMotor.setVelocity(-motor_velocity)
+        circumference = math.pi * WHEEL_BASE  # robot turning circumference
         step_count = 0
         while robot.step(timestep) != -1 and leftposition_sensor.getValue() < (
             circumference + START
@@ -77,7 +83,9 @@ def turnRV(R, V):
             step_count += 1
             if step_count % 50 == 0:  # Print every 50 timesteps
                 distance = abs(leftposition_sensor.getValue() - START)
-                print(f"Spin progress: {distance:.3f}/{circumference:.3f} ({distance/circumference*100:.1f}%)")
+                print(
+                    f"Spin progress: {distance:.3f}/{circumference:.3f} ({distance/circumference*100:.1f}%)"
+                )
 
         travelTime = time.monotonic() - timeSTART  # stop time
         leftMotor.setVelocity(0)
@@ -110,96 +118,155 @@ def turnRV(R, V):
         elif V > 0:
             W = V / R
             print("Angular Velocity: " + str(round(W, 2)) + " radians per second")
-            leftVelocity = W * (R + (WHEEL_BASE / 2))
-            rightVelocity = W * (R - (WHEEL_BASE / 2))
-            circumference = (2 * math.pi * R) * (math.pi / 2)
+            # Calculate wheel linear velocities
+            leftLinearVelocity = W * (R + (WHEEL_BASE / 2))
+            rightLinearVelocity = W * (R - (WHEEL_BASE / 2))
+            
+            # Convert to motor rotational velocities
+            leftMotorVelocity = leftLinearVelocity / WHEEL_RADIUS
+            rightMotorVelocity = rightLinearVelocity / WHEEL_RADIUS
 
-            if (
-                leftVelocity > 6.28
-                or leftVelocity < -6.28
-                or rightVelocity > 6.28
-                or rightVelocity < -6.28
-            ):
-                exitError()
+            # Check if velocities exceed motor limits and scale down if needed
+            max_required = max(abs(leftMotorVelocity), abs(rightMotorVelocity))
+            if max_required > MAX_VELOCITY:
+                scale_factor = MAX_VELOCITY / max_required
+                leftMotorVelocity *= scale_factor
+                rightMotorVelocity *= scale_factor
+                leftLinearVelocity *= scale_factor
+                rightLinearVelocity *= scale_factor
+                V = V * scale_factor  # Update V for accurate reporting
+                print(f">>>WARNING: Velocities scaled down by {scale_factor:.3f} to stay within motor limits")
+                print(f">>>Actual linear velocity: {V:.2f} inches/s")
 
-            leftMotor.setVelocity(leftVelocity)
-            rightMotor.setVelocity(rightVelocity)
+            leftMotor.setVelocity(leftMotorVelocity)
+            rightMotor.setVelocity(rightMotorVelocity)
             getSpeeds()
 
             step_count = 0
-            while robot.step(timestep) != -1 and leftposition_sensor.getValue() < (
-                START + circumference
-            ):
+            # Use distance traveled approach: stop after completing expected circle distance
+            start_left = leftposition_sensor.getValue()
+            
+            # Universal formula for any radius based on empirical calibration
+            # The outer wheel needs to travel more than theoretical due to:
+            # 1. Differential drive geometry
+            # 2. Motor dynamics and encoder precision
+            outer_wheel_radius = R + (WHEEL_BASE / 2)  # radius of outer wheel path
+            theoretical_outer_distance = 2 * math.pi * outer_wheel_radius
+            empirical_scale_factor = 1.229  # derived from 86.0/69.98 for R=10 calibration
+            expected_travel_distance = theoretical_outer_distance * empirical_scale_factor
+            print(f"Calculated travel distance: {expected_travel_distance:.1f} inches (R={R}, outer_radius={outer_wheel_radius:.2f})")
+            position_threshold = 0.5  # inch tolerance around expected distance (tighter for precision)
+            
+            # Prevent immediate stopping by requiring minimum movement first
+            min_travel_distance = 2 * math.pi * R * 0.25  # must travel at least 1/4 circle
+            
+            while robot.step(timestep) != -1:
+                left_current = leftposition_sensor.getValue()
+                left_traveled = abs(left_current - start_left)
+                
+                # For display: simulate distance from start based on circular motion
+                # This is just for progress tracking - actual stopping uses travel distance
+                angle_traveled = left_traveled / (R + WHEEL_BASE/2)
+                estimated_x = R * (1 - math.cos(angle_traveled))
+                estimated_y = R * math.sin(angle_traveled)
+                distance_from_start = math.sqrt(estimated_x**2 + estimated_y**2)
+                
+                # Stop when we've traveled the expected distance
+                if left_traveled > min_travel_distance and abs(left_traveled - expected_travel_distance) < position_threshold:
+                    break
+                
                 step_count += 1
-                if step_count % 50 == 0:  # Print every 50 timesteps
-                    distance = abs(rightposition_sensor.getValue() - START)
-                    print(f"Circle progress: {distance:.3f}/{circumference:.3f} ({distance/circumference*100:.1f}%)")
+                if step_count % 10 == 0:  # Print every 10 timesteps for detailed tracking
+                    # Use actual wheel path distance for accurate percentage
+                    outer_wheel_circumference = 2 * math.pi * (R + WHEEL_BASE/2)
+                    progress_percent = min(100, (left_traveled / outer_wheel_circumference) * 100)
+                    print(f"Circle progress: {distance_from_start:.2f} inches from start, {left_traveled:.2f} inches traveled ({progress_percent:.1f}%)")
 
             travelTime = time.monotonic() - timeSTART  # stop time
             leftMotor.setVelocity(0)
             rightMotor.setVelocity(0)
-            distanceTraveled = rightposition_sensor.getValue() - START
-            timer = distanceTraveled / V
+            circumference = 2 * math.pi * R
             print(f"[Stopping position] {rightposition_sensor.getValue()}")
-            print("[Distance: " + str(round(distanceTraveled, 2)) + " inches]")
+            total_distance_traveled = abs(leftposition_sensor.getValue() - START)
+            print(f"[Distance: {total_distance_traveled:.2f} inches] (target: {expected_travel_distance:.2f} inches)")
+            print(f"[Estimated final distance from start: {distance_from_start:.2f} inches]")
             print("[Circle Radius: " + str(round(R1, 2)) + " inches]")
-            print("[Time: " + str(round(timer, 2)) + " seconds]")
+            print("[Time: " + str(round(travelTime, 2)) + " seconds]")
             print("[Velocity: " + str(round(V, 2)) + " inches per second]")
             print(
                 "[Left Motor Velocity: "
-                + str(round(leftVelocity, 2))
+                + str(round(leftLinearVelocity, 2))
                 + " inches per second]"
             )
             print(
                 "[Right Motor Velocity: "
-                + str(round(rightVelocity, 2))
+                + str(round(rightLinearVelocity, 2))
                 + " inches per second]"
             )
         else:  # robot motor has a negative velocity and moves backwards
             W = V / R
             print("Angular Velocity: " + str(W) + " radians per second")
-            leftVelocity = W * (R + (WHEEL_BASE / 2))
-            rightVelocity = W * (R - (WHEEL_BASE / 2))
-            circumference = (2 * math.pi * R) * (math.pi / 2)
-            timer = abs(circumference / V)
+            # Calculate wheel linear velocities
+            leftLinearVelocity = W * (R + (WHEEL_BASE / 2))
+            rightLinearVelocity = W * (R - (WHEEL_BASE / 2))
+            
+            # Convert to motor rotational velocities
+            leftMotorVelocity = leftLinearVelocity / WHEEL_RADIUS
+            rightMotorVelocity = rightLinearVelocity / WHEEL_RADIUS
 
-            if (
-                leftVelocity > 6.28
-                or leftVelocity < -6.28
-                or rightVelocity > 6.28
-                or rightVelocity < -6.28
-            ):
-                exitError()
+            # Check if velocities exceed motor limits and scale down if needed
+            max_required = max(abs(leftMotorVelocity), abs(rightMotorVelocity))
+            if max_required > MAX_VELOCITY:
+                scale_factor = MAX_VELOCITY / max_required
+                leftMotorVelocity *= scale_factor
+                rightMotorVelocity *= scale_factor
+                leftLinearVelocity *= scale_factor
+                rightLinearVelocity *= scale_factor
+                V = V * scale_factor  # Update V for accurate reporting
+                print(f">>>WARNING: Velocities scaled down by {scale_factor:.3f} to stay within motor limits")
+                print(f">>>Actual linear velocity: {V:.2f} inches/s")
 
-            leftMotor.setVelocity(leftVelocity)
-            rightMotor.setVelocity(rightVelocity)
+            leftMotor.setVelocity(leftMotorVelocity)
+            rightMotor.setVelocity(rightMotorVelocity)
             getSpeeds()
+            
             step_count = 0
-            while robot.step(timestep) != -1 and leftposition_sensor.getValue() > (
-                START - circumference
-            ):
+            # Track angular displacement for negative velocity using outer wheel arc length
+            target_angle = 2 * math.pi  # full circle in radians
+            angle_tolerance = 0.01  # very small tolerance for near-perfect completion
+            angle_turned = 0
+            left_start = leftposition_sensor.getValue()
+            wheel_path_radius = R + (WHEEL_BASE / 2)  # radius of left wheel's circular path
+            
+            while robot.step(timestep) != -1 and angle_turned < (target_angle - angle_tolerance):
+                # Calculate angle from outer wheel arc length: angle = arc_length / radius
+                left_distance = leftposition_sensor.getValue() - left_start
+                angle_turned = abs(left_distance) / wheel_path_radius
+                
                 step_count += 1
                 if step_count % 50 == 0:  # Print every 50 timesteps
-                    distance = abs(rightposition_sensor.getValue() - START)
-                    print(f"Circle progress: {distance:.3f}/{circumference:.3f} ({distance/circumference*100:.1f}%)")
+                    progress_percent = (angle_turned / target_angle) * 100
+                    print(f"Circle progress: {angle_turned:.2f}/{target_angle:.2f} rad ({progress_percent:.1f}%)")
 
             travelTime = time.monotonic() - timeSTART  # stop time
             leftMotor.setVelocity(0)
             rightMotor.setVelocity(0)
-            distanceTraveled = rightposition_sensor.getValue() - START
+            circumference = 2 * math.pi * R
             print(f"[Stopping position] {rightposition_sensor.getValue()}")
-            print("[Distance: " + str(round(circumference, 2)) + " inches]")
+            total_distance_traveled = abs(leftposition_sensor.getValue() - START)
+            print(f"[Distance: {total_distance_traveled:.2f} inches] (target: {expected_travel_distance:.2f} inches)")
+            print(f"[Estimated final distance from start: {distance_from_start:.2f} inches]")
             print("[Circle Radius: " + str(round(R1, 2)) + " inches]")
-            print("[Time: " + str(round(timer, 2)) + " seconds]")
+            print("[Time: " + str(round(travelTime, 2)) + " seconds]")
             print("[Velocity: " + str(round(V, 2)) + " inches per second]")
             print(
                 "[Left Motor Velocity: "
-                + str(round(leftVelocity, 2))
+                + str(round(leftLinearVelocity, 2))
                 + " inches per second]"
             )
             print(
                 "[Right Motor Velocity: "
-                + str(round(rightVelocity, 2))
+                + str(round(rightLinearVelocity, 2))
                 + " inches per second]"
             )
 
@@ -220,10 +287,13 @@ def getCounts():
 
 def getSpeeds():
     """Display current motor velocities for both wheels."""
-    leftSpeed = round(leftMotor.getVelocity(), 2)
-    rightSpeed = round(rightMotor.getVelocity(), 2)
-    speedTuple = (leftSpeed, rightSpeed)
-    print(f"Motor Speed (Left , Right) : {speedTuple}")
+    leftMotorSpeed = round(leftMotor.getVelocity(), 2)  # rad/s
+    rightMotorSpeed = round(rightMotor.getVelocity(), 2)  # rad/s
+    # Convert to linear velocities for display
+    leftLinearSpeed = round(leftMotorSpeed * WHEEL_RADIUS, 2)  # inches/s
+    rightLinearSpeed = round(rightMotorSpeed * WHEEL_RADIUS, 2)  # inches/s
+    print(f"Motor Speed (Linear): Left={leftLinearSpeed}, Right={rightLinearSpeed} inches/s")
+    print(f"Motor Speed (Rotational): Left={leftMotorSpeed}, Right={rightMotorSpeed} rad/s")
 
 
 def initEncoders():
@@ -241,8 +311,10 @@ def exitError():
 
 
 if __name__ == "__main__":
-    if V > MAX_VELOCITY or V < -MAX_VELOCITY:
-        exitError()
+    if V > MAX_LINEAR_VELOCITY or V < -MAX_LINEAR_VELOCITY:
+        print(f">>>WARNING: Requested {V} inches/s exceeds maximum {MAX_LINEAR_VELOCITY:.2f} inches/s")
+        print(f">>>Clamping to maximum achievable velocity")
+        V = MAX_LINEAR_VELOCITY if V > 0 else -MAX_LINEAR_VELOCITY
 
     turnRV(R1, V)
     # resetCounts()

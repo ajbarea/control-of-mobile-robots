@@ -2,9 +2,10 @@
 # Tests linear motion with velocity control and encoder feedback
 
 # E-puck robot physical specifications and constants
-WHEEL_RADIUS = 0.8  # radius of epuck wheel [inches]
+WHEEL_RADIUS = 0.807  # radius of epuck wheel [inches] (official: 0.0205m)
 WHEEL_BASE = 2.28  # distance between epuck wheels [inches]
 MAX_VELOCITY = 6.28  # motor speed cap [radians per second]
+MAX_LINEAR_VELOCITY = MAX_VELOCITY * WHEEL_RADIUS  # maximum linear velocity [inches per second]
 
 from controller import Robot
 import time
@@ -74,8 +75,12 @@ def moveXV(X, V):
         while robot.step(timestep) != -1 and leftposition_sensor.getValue() < (
             START + X
         ):
-            leftMotor.setVelocity(V)
-            rightMotor.setVelocity(V)
+            # Convert linear velocity to motor rotational velocity
+            motor_velocity = V / WHEEL_RADIUS  # rad/s = inches/s ÷ inches
+            # Clamp to maximum motor velocity
+            motor_velocity = min(motor_velocity, MAX_VELOCITY)
+            leftMotor.setVelocity(motor_velocity)
+            rightMotor.setVelocity(motor_velocity)
             step_count += 1
             if step_count % 50 == 0:  # Print every 50 timesteps
                 distance = abs(rightposition_sensor.getValue() - START)
@@ -94,8 +99,12 @@ def moveXV(X, V):
         while robot.step(timestep) != -1 and leftposition_sensor.getValue() > (
             START - X
         ):
-            leftMotor.setVelocity(V)
-            rightMotor.setVelocity(V)
+            # Convert linear velocity to motor rotational velocity
+            motor_velocity = V / WHEEL_RADIUS  # rad/s = inches/s ÷ inches
+            # Clamp to maximum motor velocity
+            motor_velocity = min(motor_velocity, MAX_VELOCITY)
+            leftMotor.setVelocity(motor_velocity)
+            rightMotor.setVelocity(motor_velocity)
             step_count += 1
             if step_count % 50 == 0:  # Print every 50 timesteps
                 distance = abs(rightposition_sensor.getValue() - START)
@@ -136,8 +145,10 @@ def exitError():
 
 
 if __name__ == "__main__":
-    if V > MAX_VELOCITY or V < -MAX_VELOCITY:
-        exitError()
+    if V > MAX_LINEAR_VELOCITY or V < -MAX_LINEAR_VELOCITY:
+        print(f">>>WARNING: Requested {V} inches/s exceeds maximum {MAX_LINEAR_VELOCITY:.2f} inches/s")
+        print(f">>>Clamping to maximum achievable velocity")
+        V = MAX_LINEAR_VELOCITY if V > 0 else -MAX_LINEAR_VELOCITY
 
     moveXV(X, V)
     # setSpeedsRPS(rpsLeft, rpsRight)
