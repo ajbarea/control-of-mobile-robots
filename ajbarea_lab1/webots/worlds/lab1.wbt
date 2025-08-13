@@ -1,0 +1,84 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
+WorldInfo {
+  info [
+    "Example use of the Encoders of a Robot robot."
+  ]
+  title "Encoders"
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.9763072927830084 -0.0007130670181884172 -0.2163875264291843 1.6090404672508463
+  position -4.78758977121857 1.3085318850104715 -0.9993678837479233
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  translation -7.81224e-09 -0.07 5.10491e-07
+  rotation -0.9999036252769383 -0.009816806321061723 -0.009816846321046733 1.5709
+  floorSize 3 3
+  floorTileSize 1 1
+}
+Solid {
+  translation 0.255 0.05 0
+  name "Rectangle"
+  locked TRUE
+}
+DEF epuck E-puck {
+  translation 0 -0.07006 0
+  rotation -0.5773563008159024 -0.5773562039289772 -0.5773383026379753 2.0944130963300407
+  controller "lab1_task1"
+  turretSlot [
+    InertialUnit {
+      rotation 0 1 0 3.14159265359
+    }
+    DEF front_ds DistanceSensor {
+      name "front_ds"
+      recognitionColors [
+        0 0 0
+      ]
+      lookupTable [
+        0 0 0
+        60 1000 0
+      ]
+    }
+    DEF right_ds DistanceSensor {
+      rotation 0 0 1 -1.5708
+      name "right_ds"
+      lookupTable [
+        0 0 0
+        60 1000 0
+      ]
+    }
+    DEF left_ds DistanceSensor {
+      rotation 0 0 1 1.5708
+      name "left_ds"
+      lookupTable [
+        0 0 0
+        60 1000 0
+      ]
+    }
+    Camera {
+      translation 0 -0.01 -0.045
+      name "camera1"
+      recognitionColors [
+        1 1 0
+        1 0 1
+        0 1 1
+        0 1 0
+      ]
+      fieldOfView 1.57
+      width 80
+      height 80
+      recognition Recognition {
+      }
+    }
+  ]
+}
