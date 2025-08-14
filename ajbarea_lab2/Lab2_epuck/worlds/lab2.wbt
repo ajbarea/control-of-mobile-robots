@@ -1,4 +1,10 @@
-#VRML_SIM R2022a utf8
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+
 WorldInfo {
   info [
     "Example use of the Encoders of a Robot robot."
@@ -14,9 +20,11 @@ TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-Floor {
-  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
-  size 3 3
+RectangleArena {
+  translation -7.81224e-09 -0.07 5.10491e-07
+  rotation -0.9999036252769383 -0.009816806321061723 -0.009816846321046733 1.5709
+  floorSize 3 3
+  floorTileSize 1 1
 }
 Solid {
   translation 0.255 0 0.375
