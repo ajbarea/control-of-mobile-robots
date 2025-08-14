@@ -173,6 +173,10 @@ def exitError():
 
 
 if __name__ == "__main__":
+    # Input validation
+    if abs(X) < 0.1:
+        print(f">>>WARNING: Distance {X} inches is very small. Consider using at least 0.1 inches.")
+    
     if V > MAX_LINEAR_VELOCITY or V < -MAX_LINEAR_VELOCITY:
         print(
             f">>>WARNING: Requested {V} inches/s exceeds maximum {MAX_LINEAR_VELOCITY:.2f} inches/s"
@@ -180,7 +184,9 @@ if __name__ == "__main__":
         print(f">>>Clamping to maximum achievable velocity")
         V = MAX_LINEAR_VELOCITY if V > 0 else -MAX_LINEAR_VELOCITY
 
+    print(f"Starting motion: {X} inches at {V} inches/second")
     moveXV(X, V)
+    print("Motion completed successfully!")
     # setSpeedsRPS(rpsLeft, rpsRight)
     # setSpeedsIPS(ipsLeft, ipsRight)
     # setSpeedsVW(V, W)
