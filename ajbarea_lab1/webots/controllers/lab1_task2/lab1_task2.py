@@ -1,6 +1,12 @@
 # Lab 1 Task 2: Circular Motion Control
 # Tests differential drive kinematics for circular trajectories
 
+import math
+import sys
+import time
+
+from controller import Robot
+
 # E-puck robot physical specifications and constants
 WHEEL_RADIUS = 0.807  # radius of epuck wheel [inches] (official: 0.0205m)
 WHEEL_BASE = 2.28  # distance between epuck wheels [inches]
@@ -8,11 +14,6 @@ MAX_VELOCITY = 6.28  # motor speed cap [radians per second]
 MAX_LINEAR_VELOCITY = (
     MAX_VELOCITY * WHEEL_RADIUS
 )  # maximum linear velocity [inches per second]
-
-from controller import Robot
-import time
-import sys
-import math
 
 # Initialize robot and simulation parameters
 robot = Robot()
@@ -36,9 +37,7 @@ rightposition_sensor.enable(timestep)  # enable encoder readings
 
 robot.step(timestep)
 
-############################################################################
-############# Experiment Parameters - Modify these for testing #############
-############################################################################
+# Experiment Parameters - Modify these for testing
 
 # Choose your experiment by uncommenting one set of parameters:
 
@@ -65,9 +64,7 @@ V = 3  # linear velocity [inches per second]
 W = 0  # angular velocity [radians per second] - calculated from V and R
 print(f"=== Running Test: R={R1} inches, V={V} inches/second ===")
 
-############################################################################
-############################################################################
-############################################################################
+# End of experiment parameters
 
 
 def turnRV(R, V):
@@ -100,7 +97,7 @@ def turnRV(R, V):
             if step_count % 50 == 0:  # Print every 50 timesteps
                 distance = abs(leftposition_sensor.getValue() - START)
                 print(
-                    f"Spin progress: {distance:.3f}/{circumference:.3f} ({distance/circumference*100:.1f}%)"
+                    f"Spin progress: {distance:.3f}/{circumference:.3f} ({distance / circumference * 100:.1f}%)"
                 )
 
         travelTime = time.monotonic() - timeSTART  # stop time
@@ -328,8 +325,8 @@ def turnRV(R, V):
 
 def resetCounts():
     """Reset encoder tick counter (placeholder function)."""
-    print(f"resetting number of ticks to 0")
-    ticks = 0
+    print("resetting number of ticks to 0")
+    # ticks reset to 0 (placeholder implementation)
 
 
 def getCounts():
@@ -374,15 +371,15 @@ if __name__ == "__main__":
     if R1 < 0:
         print(f">>>ERROR: Radius {R1} cannot be negative. Use 0 for turn-in-place.")
         sys.exit(1)
-    
+
     if R1 > 0 and R1 < 1:
         print(f">>>WARNING: Small radius {R1} inches may cause high wheel speeds.")
-    
+
     if V > MAX_LINEAR_VELOCITY or V < -MAX_LINEAR_VELOCITY:
         print(
             f">>>WARNING: Requested {V} inches/s exceeds maximum {MAX_LINEAR_VELOCITY:.2f} inches/s"
         )
-        print(f">>>Clamping to maximum achievable velocity")
+        print(">>>Clamping to maximum achievable velocity")
         V = MAX_LINEAR_VELOCITY if V > 0 else -MAX_LINEAR_VELOCITY
 
     print(f"Starting circular motion: R={R1} inches, V={V} inches/second")

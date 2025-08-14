@@ -1,6 +1,11 @@
 # Lab 1 Task 1: Straight-Line Motion Control
 # Tests linear motion with velocity control and encoder feedback
 
+import sys
+import time
+
+from controller import Robot
+
 # E-puck robot physical specifications and constants
 WHEEL_RADIUS = 0.807  # radius of epuck wheel [inches] (official: 0.0205m)
 WHEEL_BASE = 2.28  # distance between epuck wheels [inches]
@@ -8,11 +13,6 @@ MAX_VELOCITY = 6.28  # motor speed cap [radians per second]
 MAX_LINEAR_VELOCITY = (
     MAX_VELOCITY * WHEEL_RADIUS
 )  # maximum linear velocity [inches per second]
-
-from controller import Robot
-import time
-import sys
-import math
 
 # Initialize robot and simulation parameters
 robot = Robot()
@@ -34,9 +34,7 @@ rightposition_sensor.enable(timestep)  # enable encoder readings
 
 robot.step(timestep)
 
-############################################################################
-############# Experiment Parameters - Modify these for testing #############
-############################################################################
+# Experiment Parameters - Modify these for testing
 
 # Choose your experiment by uncommenting one set of parameters:
 
@@ -62,9 +60,7 @@ V = 3  # velocity [inches per second]
 
 print(f"=== Running Test: {X} inches at {V} inches/second ===")
 
-############################################################################
-############################################################################
-############################################################################
+# End of experiment parameters
 
 
 def moveXV(X, V):
@@ -100,7 +96,9 @@ def moveXV(X, V):
             step_count += 1
             if step_count % 50 == 0:  # Print every 50 timesteps
                 distance = abs(rightposition_sensor.getValue() - START)
-                print(f"Progress: {distance:.3f}/{X} inches ({distance/X*100:.1f}%)")
+                print(
+                    f"Progress: {distance:.3f}/{X} inches ({distance / X * 100:.1f}%)"
+                )
 
         travelTime = time.monotonic() - timeSTART  # stop time
         leftMotor.setVelocity(0)
@@ -111,10 +109,10 @@ def moveXV(X, V):
             f"[Distance: {X:.2f} inches] actual distance traveled: {distanceTraveled:.4f} inches"
         )
         print(
-            f"[Time: {X/V:.2f} seconds] actual time traveled: {travelTime:.4f} seconds"
+            f"[Time: {X / V:.2f} seconds] actual time traveled: {travelTime:.4f} seconds"
         )
         print(
-            f"[Velocity: {V:.2f} inches per second] actual velocity: {(distanceTraveled/travelTime):.4f} inches per second"
+            f"[Velocity: {V:.2f} inches per second] actual velocity: {(distanceTraveled / travelTime):.4f} inches per second"
         )
     else:  # robot motor has a negative velocity and moves backwards
         step_count = 0
@@ -130,7 +128,9 @@ def moveXV(X, V):
             step_count += 1
             if step_count % 50 == 0:  # Print every 50 timesteps
                 distance = abs(rightposition_sensor.getValue() - START)
-                print(f"Progress: {distance:.3f}/{X} inches ({distance/X*100:.1f}%)")
+                print(
+                    f"Progress: {distance:.3f}/{X} inches ({distance / X * 100:.1f}%)"
+                )
 
         travelTime = time.monotonic() - timeSTART  # stop time
         leftMotor.setVelocity(0)
@@ -141,10 +141,10 @@ def moveXV(X, V):
             f"[Distance: {X} inches] actual distance traveled: {distanceTraveled:.4f} inches"
         )
         print(
-            f"[Time: {(X/V*-1):.2f} seconds] actual time traveled: {travelTime:.4f} seconds"
+            f"[Time: {(X / V * -1):.2f} seconds] actual time traveled: {travelTime:.4f} seconds"
         )
         print(
-            f"[Velocity: {V*-1} inches per second] actual velocity: {(distanceTraveled/travelTime):.4f} inches per second"
+            f"[Velocity: {V * -1} inches per second] actual velocity: {(distanceTraveled / travelTime):.4f} inches per second"
         )
 
 
@@ -175,13 +175,15 @@ def exitError():
 if __name__ == "__main__":
     # Input validation
     if abs(X) < 0.1:
-        print(f">>>WARNING: Distance {X} inches is very small. Consider using at least 0.1 inches.")
-    
+        print(
+            f">>>WARNING: Distance {X} inches is very small. Consider using at least 0.1 inches."
+        )
+
     if V > MAX_LINEAR_VELOCITY or V < -MAX_LINEAR_VELOCITY:
         print(
             f">>>WARNING: Requested {V} inches/s exceeds maximum {MAX_LINEAR_VELOCITY:.2f} inches/s"
         )
-        print(f">>>Clamping to maximum achievable velocity")
+        print(">>>Clamping to maximum achievable velocity")
         V = MAX_LINEAR_VELOCITY if V > 0 else -MAX_LINEAR_VELOCITY
 
     print(f"Starting motion: {X} inches at {V} inches/second")
