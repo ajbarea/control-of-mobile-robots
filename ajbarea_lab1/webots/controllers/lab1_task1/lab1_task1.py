@@ -5,7 +5,9 @@
 WHEEL_RADIUS = 0.807  # radius of epuck wheel [inches] (official: 0.0205m)
 WHEEL_BASE = 2.28  # distance between epuck wheels [inches]
 MAX_VELOCITY = 6.28  # motor speed cap [radians per second]
-MAX_LINEAR_VELOCITY = MAX_VELOCITY * WHEEL_RADIUS  # maximum linear velocity [inches per second]
+MAX_LINEAR_VELOCITY = (
+    MAX_VELOCITY * WHEEL_RADIUS
+)  # maximum linear velocity [inches per second]
 
 from controller import Robot
 import time
@@ -36,16 +38,29 @@ robot.step(timestep)
 ############# Experiment Parameters - Modify these for testing #############
 ############################################################################
 
-X = 60  # distance [inches]
-V = -MAX_VELOCITY  # velocity [inches per second]
-V = 0  # velocity [inches per second]
-V = MAX_VELOCITY  # velocity [inches per second]
-# V = MAX_VELOCITY + 1 # velocity [inches per second]
-# W = 36  # angular velocity [radians per second]
-# rpsLeft = 100  # motor speed [radians per second]
-# rpsRight = 80
-# ipsLeft = 21  # motor speed [inches per second]
-# ipsRight = 18
+# Choose your experiment by uncommenting one set of parameters:
+
+# Test 1: Short distance, medium speed
+X = 12  # distance [inches]
+V = 3  # velocity [inches per second]
+
+# Test 2: Long distance, slow speed
+# X = 60  # distance [inches]
+# V = 1   # velocity [inches per second]
+
+# Test 3: Medium distance, max speed
+# X = 24  # distance [inches]
+# V = MAX_LINEAR_VELOCITY  # velocity [inches per second]
+
+# Test 4: Backward motion
+# X = 18  # distance [inches]
+# V = -2  # velocity [inches per second]
+
+# Test 5: Zero velocity (robot stays put)
+# X = 12  # distance [inches]
+# V = 0   # velocity [inches per second]
+
+print(f"=== Running Test: {X} inches at {V} inches/second ===")
 
 ############################################################################
 ############################################################################
@@ -59,14 +74,15 @@ def moveXV(X, V):
         X (float): Target distance in inches
         V (float): Linear velocity in inches/second
     """
-    print(f"\nMOVE ROBOT straight {X} inches at {V} inches per second")
     START = leftposition_sensor.getValue()  # starting position
     print(f"[Starting position] {START}")
     timeSTART = time.monotonic()  # start time
     if V == 0:  # robot motor has a velocity of zero and stays put
         distanceTraveled = 0
         print(f"[Stopping position] {rightposition_sensor.getValue()}")
-        print(f"[Distance: {X} inches] actual distance traveled: {distanceTraveled:.4f} inches")
+        print(
+            f"[Distance: {X} inches] actual distance traveled: {distanceTraveled:.4f} inches"
+        )
         print("[Time: 0 seconds] actual time traveled: 0 seconds")
         print(f"[Velocity: {V} inches per second] actual velocity: 0 inches per second")
         print(">>>HINT: That was boring! Try a velocity in range [-6.28, 6.28]")
@@ -91,9 +107,15 @@ def moveXV(X, V):
         rightMotor.setVelocity(0)
         distanceTraveled = rightposition_sensor.getValue() - START
         print(f"[Stopping position] {rightposition_sensor.getValue()}")
-        print(f"[Distance: {X:.2f} inches] actual distance traveled: {distanceTraveled:.4f} inches")
-        print(f"[Time: {X/V:.2f} seconds] actual time traveled: {travelTime:.4f} seconds")
-        print(f"[Velocity: {V:.2f} inches per second] actual velocity: {(distanceTraveled/travelTime):.4f} inches per second")
+        print(
+            f"[Distance: {X:.2f} inches] actual distance traveled: {distanceTraveled:.4f} inches"
+        )
+        print(
+            f"[Time: {X/V:.2f} seconds] actual time traveled: {travelTime:.4f} seconds"
+        )
+        print(
+            f"[Velocity: {V:.2f} inches per second] actual velocity: {(distanceTraveled/travelTime):.4f} inches per second"
+        )
     else:  # robot motor has a negative velocity and moves backwards
         step_count = 0
         while robot.step(timestep) != -1 and leftposition_sensor.getValue() > (
@@ -115,9 +137,15 @@ def moveXV(X, V):
         rightMotor.setVelocity(0)
         distanceTraveled = (rightposition_sensor.getValue() - START) * -1
         print(f"[Stopping position] {rightposition_sensor.getValue()}")
-        print(f"[Distance: {X} inches] actual distance traveled: {distanceTraveled:.4f} inches")
-        print(f"[Time: {(X/V*-1):.2f} seconds] actual time traveled: {travelTime:.4f} seconds")
-        print(f"[Velocity: {V*-1} inches per second] actual velocity: {(distanceTraveled/travelTime):.4f} inches per second")
+        print(
+            f"[Distance: {X} inches] actual distance traveled: {distanceTraveled:.4f} inches"
+        )
+        print(
+            f"[Time: {(X/V*-1):.2f} seconds] actual time traveled: {travelTime:.4f} seconds"
+        )
+        print(
+            f"[Velocity: {V*-1} inches per second] actual velocity: {(distanceTraveled/travelTime):.4f} inches per second"
+        )
 
 
 def setSpeedsRPS(rpsLeft, rpsRight):
@@ -146,7 +174,9 @@ def exitError():
 
 if __name__ == "__main__":
     if V > MAX_LINEAR_VELOCITY or V < -MAX_LINEAR_VELOCITY:
-        print(f">>>WARNING: Requested {V} inches/s exceeds maximum {MAX_LINEAR_VELOCITY:.2f} inches/s")
+        print(
+            f">>>WARNING: Requested {V} inches/s exceeds maximum {MAX_LINEAR_VELOCITY:.2f} inches/s"
+        )
         print(f">>>Clamping to maximum achievable velocity")
         V = MAX_LINEAR_VELOCITY if V > 0 else -MAX_LINEAR_VELOCITY
 
