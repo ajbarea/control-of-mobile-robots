@@ -2,7 +2,7 @@ ajbarea_lab1/webots/worlds/.lab1.wbproj
 ajbarea_lab1/webots/worlds/.lab1.jpg
 
 # Claude Code local settings
-.claude/settings.local.json
+.claude/
 *.pyc
 
 # Egg-info directories
