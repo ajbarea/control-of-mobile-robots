@@ -1,133 +1,141 @@
+<div align="center">
+
 # 🤖 Control of Mobile Robots
 
-A collection of mobile robotics control system implementations using Webots simulation environment. Learn robot navigation, localization, and autonomous behavior development through hands-on examples and practical implementations.
+### Mobile robotics in Webots: PID control, localization, and maze-solving with e-puck robots
 
-> **📝 Migration Notice**: Currently migrating source code from Webots R2022a to Webots R2025a. Some implementations may be in transition.
+*A six-module tutorial series with [YouTube walkthroughs](https://www.youtube.com/playlist?list=PLmQVFU1FBDddYV_4IRW1zfXH6CAKuZjIM) covering everything from basic differential drive to autonomous goal-seeking.*
 
-## 🎯 Project Overview
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.13+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![Webots](https://img.shields.io/badge/Webots-R2025a-blueviolet?style=flat-square)](https://cyberbotics.com)
+[![YouTube](https://img.shields.io/badge/YouTube-tutorial%20series-FF0000?style=flat-square&logo=youtube&logoColor=white)](https://www.youtube.com/playlist?list=PLmQVFU1FBDddYV_4IRW1zfXH6CAKuZjIM)
 
-Mobile robotics control systems design and implementation covering:
+[![Control of Mobile Robots](https://res.cloudinary.com/marcomontalbano/image/upload/v1671483418/video_to_markdown/images/youtube--MX-L8MLTDGI-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://www.youtube.com/watch?v=MX-L8MLTDGI&list=PLmQVFU1FBDddYV_4IRW1zfXH6CAKuZjIM&index=2 "Control of Mobile Robots — watch the playlist")
 
-- 💻 Microcontroller programming and sensor integration
-- ⚙️ Actuator control processes for precise movement
-- 🗺️ Localization algorithms and navigation systems
-- 🧠 Autonomous behavior development
-- 🔧 Software interface design for robot control
+</div>
 
-[![Control of Mobile Robots](https://res.cloudinary.com/marcomontalbano/image/upload/v1671483418/video_to_markdown/images/youtube--MX-L8MLTDGI-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://www.youtube.com/watch?v=MX-L8MLTDGI&list=PLmQVFU1FBDddYV_4IRW1zfXH6CAKuZjIM&index=2 "Control of Mobile Robots")
+---
 
-## 📁 Repository Structure
+## Project Overview
+
+Hands-on mobile robotics control covering:
+
+- Microcontroller programming and sensor integration
+- Actuator control for precise movement
+- Localization algorithms and navigation systems
+- Autonomous behavior development
+- Software interface design for robot control
+
+## Repository Structure
 
 ```text
-├── ajbarea_lab1/          # 🚀 Basic robot movement and control
-├── ajbarea_lab2/          # 📡 Sensor integration and feedback systems
-├── ajbarea_lab3/          # 🧭 Navigation and obstacle avoidance
-├── ajbarea_lab4/          # 🎛️ Advanced control algorithms
-├── ajbarea_lab5/          # 📍 Localization techniques
-├── ajbarea_lab6/          # 🤖 Autonomous behavior systems
-├── tests/                 # ✅ Unit tests and validation
-└── lint.py               # 🧹 Code quality tools
+├── ajbarea_lab1/          # Basic robot movement and control
+├── ajbarea_lab2/          # Sensor integration and feedback systems
+├── ajbarea_lab3/          # Navigation and obstacle avoidance
+├── ajbarea_lab4/          # Advanced control algorithms
+├── ajbarea_lab5/          # Localization techniques
+├── ajbarea_lab6/          # Autonomous behavior systems
+├── tests/                 # Unit tests and validation
+└── lint.py                # Code quality tools
 ```
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-- **🌐 Simulation Environment**: Cyberbotics Webots R2025a
-- **🐍 Programming Language**: Python 3.13+
-- **🤖 Robot Platform**: e-puck differential drive robot
-- **⚡ Control Systems**: PID controllers, state machines
-- **📡 Sensors**: Distance sensors, encoders, camera
+- **Simulation Environment**: Cyberbotics Webots R2025a
+- **Programming Language**: Python 3.13+
+- **Robot Platform**: e-puck differential drive robot
+- **Control Systems**: PID controllers, state machines
+- **Sensors**: Distance sensors, encoders, camera
 
-## 🚀 Quick Start
+## Quick Start
 
-### ✅ Prerequisites
+### Prerequisites
 
-- 🌐 Webots R2025a or later
-- 🐍 Python 3.13+
-- 🔧 Git
+- Webots R2025a or later
+- Python 3.13+
+- Git
 
-### 📥 Installation
+### Installation
 
-1. Clone the repository:
+```bash
+git clone https://github.com/ajbarea/control-of-mobile-robots.git
+cd control-of-mobile-robots
+pip install -e ".[testing]"
+```
 
-   ```bash
-   git clone https://github.com/ajbarea/control-of-mobile-robots.git
-   cd control-of-mobile-robots
-   ```
+Open any module's world file (`.wbt`) in Webots and run the corresponding controller.
 
-2. Install development dependencies:
+## Tutorial Modules
 
-   ```bash
-   pip install -e ".[testing]"
-   ```
+### Module 1: Robot Fundamentals
 
-3. Open any module world file in Webots and run the corresponding controller.
+- Basic movement control
+- Velocity and angular velocity manipulation
+- Circular and linear motion patterns
 
-## 📚 Tutorial Modules
+### Module 2: Sensor Integration
 
-### 🚀 Module 1: Robot Fundamentals
+- Distance sensor calibration
+- Feedback control systems
+- Reactive behaviors
 
-- ⚡ Basic movement control
-- 🔄 Velocity and angular velocity manipulation
-- 📐 Circular and linear motion patterns
+### Module 3: Navigation Systems
 
-### 📡 Module 2: Sensor Integration
+- Wall following algorithms
+- Corridor navigation
+- Maze solving strategies
 
-- 📏 Distance sensor calibration
-- 🔄 Feedback control systems
-- ⚡ Reactive behaviors
+### Module 4: Advanced Control
 
-### 🧭 Module 3: Navigation Systems
+- PID controller implementation
+- Trajectory following
+- Precision movement control
 
-- 🏃‍♂️ Wall following algorithms
-- 🚶‍♂️ Corridor navigation
-- 🧩 Maze solving strategies
+### Module 5: Localization
 
-### ⚡ Module 4: Advanced Control
+- Odometry calculations
+- Position estimation
+- Sensor fusion techniques
 
-- 🎯 PID controller implementation
-- 📍 Trajectory following
-- 🎛️ Precision movement control
+### Module 6: Autonomous Behavior
 
-### 📍 Module 5: Localization
+- Decision-making algorithms
+- Multi-task coordination
+- Complex navigation scenarios
 
-- 📊 Odometry calculations
-- 🎯 Position estimation
-- 🔀 Sensor fusion techniques
+## Development
 
-### 🤖 Module 6: Autonomous Behavior
-
-- 🧠 Decision-making algorithms
-- 🔄 Multi-task coordination
-- 🌐 Complex navigation scenarios
-
-## 💻 Development
-
-### ✅ Running Tests
+### Running Tests
 
 ```bash
 python -m pytest tests/ -v
 ```
 
-### 🧹 Code Quality
+### Code Quality
 
 ```bash
 python lint.py
 ```
 
-### 🌐 Webots Integration
+### Webots Integration
 
 Each module contains Webots world files (`.wbt`) and corresponding Python controllers. Open the world file in Webots and the controller will automatically load.
 
-## 🎓 Usage & Learning
+## Audience
 
-This repository provides practical implementations of mobile robotics algorithms. Each module builds upon previous concepts, making it suitable for:
+Practical implementations of mobile robotics algorithms. Each module builds on the previous one, suitable for:
 
-- 📚 Students learning robotics fundamentals
-- 💻 Developers implementing mobile robot control systems  
-- 🔬 Researchers prototyping navigation algorithms
-- 🤖 Anyone interested in autonomous robot behavior
+- Students learning robotics fundamentals
+- Developers implementing mobile robot control systems
+- Researchers prototyping navigation algorithms
+- Anyone interested in autonomous robot behavior
 
-All implementations are thoroughly documented and tested. ✅
+All implementations are documented and tested.
+
+## License
+
+[MIT](LICENSE)
 
 ---
 
